@@ -102,16 +102,16 @@ public class EchoHttpServer3 {
         logger.info("Netty Version: {}", version.artifactVersion());
 
         Counter counter = Counter.build()
-                .name("requests_total").help("requests_total").register(registry);
+                .name("requests_total").help("Requests total").register(registry);
         Gauge gauge = Gauge.build()
-                .name("inprogress_requests").help("inprogress_requests").register(registry);
+                .name("inprogress_requests").help("Inprogress Requests").register(registry);
         gauge.setToCurrentTime();
         Histogram requestLatency = Histogram.build()
                 .name("requests_latency_seconds").help("Request latency in seconds.").register(registry);
         Histogram.Timer requestTimer = requestLatency.startTimer();
-        Summary receivedBytes = Summary.build()
-                .name("requests_size_bytes").help("Request size in bytes.").register(registry);
-        Summary.Timer summeryTimer = receivedBytes.startTimer();
+        Summary sTimmer = Summary.build()
+                .name("requests_latency").help("Request latency").register(registry);
+        Summary.Timer summeryTimer = sTimmer.startTimer();
 
         // Configure SSL.
         final SslContext sslCtx;

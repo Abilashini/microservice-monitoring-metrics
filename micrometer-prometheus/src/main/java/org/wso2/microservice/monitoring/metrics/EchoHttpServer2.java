@@ -23,6 +23,8 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.sun.net.httpserver.HttpServer;
 import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.DistributionSummary;
+import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
@@ -48,6 +50,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.security.cert.CertificateException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -136,6 +140,23 @@ public class EchoHttpServer2 {
             Timer timer = registry.timer("timer");
 
             timer.record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
+
+            List<String> list = new ArrayList<>(4);
+
+            Gauge gauge = Gauge
+                    .builder("cache.size", list, List::size)
+                    .register(registry);
+            list.add("1");
+            list.add("2");
+
+            DistributionSummary distributionSummary = DistributionSummary
+                    .builder("request.size")
+                    .baseUnit("bytes")
+                    .register(registry);
+
+            distributionSummary.record(3);
+            distributionSummary.record(4);
+            distributionSummary.record(5);
 
             // Start the server.
             // Bind and start to accept incoming connections.

@@ -23,6 +23,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.Counter;
+import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
@@ -54,6 +55,8 @@ import java.io.StringWriter;
 import java.net.InetSocketAddress;
 import java.security.cert.CertificateException;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -147,6 +150,13 @@ public class EchoHttpServer1 {
             counter.inc(10);
             TimeUnit.NANOSECONDS.sleep(100);
             timer.update(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
+
+            Queue queue = new LinkedList();
+            queue.add("1");
+            queue.add("2");
+            queue.add("3");
+            dropwizardRegistry.register("queue", (Gauge<Integer>) () -> queue.size());
+            queue.add("4");
 
             // Start the server.
             // Bind and start to accept incoming connections.
